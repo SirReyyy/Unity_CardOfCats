@@ -10,7 +10,7 @@ public class NewBehaviourScript : MonoBehaviour
     
     [SerializeField]
     private GameObject btn;
-    private int totalBtn = 8;
+    private int totalBtn = 0;
 
     //----- Functions
 
