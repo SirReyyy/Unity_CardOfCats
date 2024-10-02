@@ -8,12 +8,16 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour
 {
     //----- Variables
+    private Singleton _singletonManager;
+
+
     [SerializeField]
     private Transform puzzleField;
 
     [SerializeField]
     public Sprite bgImage;
     public GameObject endImg;
+    public GameObject bestImg;
 
     public Sprite[] catsImage;
     public List<Sprite> catPuzzles = new List<Sprite>();
@@ -21,7 +25,7 @@ public class GameController : MonoBehaviour
 
     [SerializeField]
     private GameObject btn;
-    private int totalBtn = 8;
+    private int totalBtn;
 
     private bool firstGuess, secondGuess;
     private string firstGuessPuzzle, secondGuessPuzzle;
@@ -37,13 +41,19 @@ public class GameController : MonoBehaviour
 
     //----- Functions
     void Awake() {
+        _singletonManager = Singleton.Instance;
+        totalBtn = _singletonManager.GridSize;
+
+        // Debug.Log(_singletonManager.easyBest);
+
         SetGridSize(totalBtn);
+
         PopulateBtns();
         catsImage = Resources.LoadAll<Sprite>("Sprites/Cats");
     } //-- Awake end
 
     void Start() {
-        GetButtons();
+        GetPuzzleButtons();
         AddBtnListeners();
         AddCatPuzzles();
         ShuffleCats(catPuzzles);
@@ -52,13 +62,18 @@ public class GameController : MonoBehaviour
 
     private void SetGridSize(int size) {
         GridLayoutGroup puzzleGrid = puzzleField.GetComponent<GridLayoutGroup>();
-        if (size == 8)
+
+        if (size == 8) {
             puzzleGrid.cellSize = new Vector2(280, 280);
-        else if (size == 12)
+            bestCountTxt.text = _singletonManager.easyBest.ToString();
+        } else if (size == 12) {
             puzzleGrid.cellSize = new Vector2(230, 230);
-        else if (size == 16)
+            bestCountTxt.text = _singletonManager.medBest.ToString();
+        } else if (size == 16) {
             puzzleGrid.cellSize = new Vector2(180, 180);
-    } //-- SetGridSize
+            bestCountTxt.text = _singletonManager.diffBest.ToString();
+        }
+    } //-- SetGridSize end
 
     private void PopulateBtns() {
         for (int i = 0; i < totalBtn; i++) {
@@ -68,7 +83,7 @@ public class GameController : MonoBehaviour
         }
     } //-- PopulateBtns end
 
-    private void GetButtons() {
+    private void GetPuzzleButtons() {
         // Get buttons with tag Puzzle Button
         GameObject[] objects = GameObject.FindGameObjectsWithTag("PuzzleButton");
 
@@ -166,10 +181,30 @@ public class GameController : MonoBehaviour
     IEnumerator EndGame() {
         yield return new WaitForSeconds(0.5f);
         endImg.SetActive(true);
+        CheckBestScore(totalBtn, countGuesses);
 
         yield return new WaitForSeconds(3.0f);
         SceneManager.LoadScene("Menu");
     } //-- EndGame end
+
+    private void CheckBestScore(int size, int score) {
+        if (size == 8) {
+            if(_singletonManager.easyBest > score) {
+                _singletonManager.easyBest = score;
+                bestImg.SetActive(true);
+            }
+        } else if (size == 12) {
+            if (_singletonManager.medBest > score) {
+                _singletonManager.medBest = score;
+                bestImg.SetActive(true);
+            }
+        } else if (size == 16) {
+            if (_singletonManager.diffBest > score) {
+                _singletonManager.diffBest = score;
+                bestImg.SetActive(true);
+            }
+        }
+    } //-- CheckBestScore
 
     public void HomeBtn() {
         SceneManager.LoadScene("Menu");
