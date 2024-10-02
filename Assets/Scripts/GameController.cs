@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour
     //----- Variables
     private Singleton _singletonManager;
 
-
+    [Header("Game Objects")]
     [SerializeField]
     private Transform puzzleField;
 
@@ -19,6 +19,7 @@ public class GameController : MonoBehaviour
     public GameObject endImg;
     public GameObject bestImg;
 
+    [Header("Sprites and Buttons")]
     public Sprite[] catsImage;
     public List<Sprite> catPuzzles = new List<Sprite>();
     public List<Button> btnList = new List<Button>();
@@ -34,22 +35,27 @@ public class GameController : MonoBehaviour
     private int countGuesses;
     private int countCorrectGuesses;
     private int gameGuesses, tempMatchLeft;
-    
+
+    [Header("TMP Text")]
     public TMP_Text matchCountTxt;
     public TMP_Text guessCountTxt;
     public TMP_Text bestCountTxt;
 
+    [Header("Audio Files")]
+    public AudioClip[] audioClips;
+    private AudioSource audioSource;
+
     //----- Functions
     void Awake() {
         _singletonManager = Singleton.Instance;
+        
         totalBtn = _singletonManager.GridSize;
-
-        // Debug.Log(_singletonManager.easyBest);
-
         SetGridSize(totalBtn);
 
         PopulateBtns();
         catsImage = Resources.LoadAll<Sprite>("Sprites/Cats");
+
+        audioSource = GetComponent<AudioSource>();
     } //-- Awake end
 
     void Start() {
@@ -57,6 +63,8 @@ public class GameController : MonoBehaviour
         AddBtnListeners();
         AddCatPuzzles();
         ShuffleCats(catPuzzles);
+
+        audioSource.Play();
     } //-- Awake end
 
 
@@ -149,17 +157,21 @@ public class GameController : MonoBehaviour
     } //-- PickPuzzle end
 
     IEnumerator CheckIfCatsMatch() {
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.2f);
 
         if(firstGuessPuzzle == secondGuessPuzzle) {
-            yield return new WaitForSeconds(0.5f);
+            audioSource.PlayOneShot(audioClips[0], 1.0f);
+            yield return new WaitForSeconds(1.0f);
+
             btnList[firstGuessIndex].interactable = false;
             btnList[secondGuessIndex].interactable = false;
             btnList[firstGuessIndex].image.color = new Color(0,0,0,0);
             btnList[secondGuessIndex].image.color = new Color(0, 0, 0, 0);
             IsGameFinished();
         } else {
-            yield return new WaitForSeconds(0.5f);
+            audioSource.PlayOneShot(audioClips[1], 1.0f);
+            yield return new WaitForSeconds(1.0f);
+            
             btnList[firstGuessIndex].image.sprite = bgImage;
             btnList[secondGuessIndex].image.sprite = bgImage;
         }

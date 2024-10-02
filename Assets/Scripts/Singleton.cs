@@ -7,9 +7,9 @@ public class Singleton : MonoBehaviour
     private static Singleton instance;
 
     public int GridSize { get; set; }
-    public int easyBest { get; set; } = 50;
-    public int medBest { get; set; } = 10;
-    public int diffBest { get; set; } = 15;
+    public int easyBest { get; set; } = 10;
+    public int medBest { get; set; } = 15;
+    public int diffBest { get; set; } = 20;
 
     // Singleton Instance
     public static Singleton Instance {
