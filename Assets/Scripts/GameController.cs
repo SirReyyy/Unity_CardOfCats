@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -11,6 +13,7 @@ public class GameController : MonoBehaviour
 
     [SerializeField]
     public Sprite bgImage;
+    public GameObject endImg;
 
     public Sprite[] catsImage;
     public List<Sprite> catPuzzles = new List<Sprite>();
@@ -18,7 +21,7 @@ public class GameController : MonoBehaviour
 
     [SerializeField]
     private GameObject btn;
-    private int totalBtn = 12;
+    private int totalBtn = 8;
 
     private bool firstGuess, secondGuess;
     private string firstGuessPuzzle, secondGuessPuzzle;
@@ -26,11 +29,15 @@ public class GameController : MonoBehaviour
 
     private int countGuesses;
     private int countCorrectGuesses;
-    private int gameGuesses;
-
+    private int gameGuesses, tempMatchLeft;
+    
+    public TMP_Text matchCountTxt;
+    public TMP_Text guessCountTxt;
+    public TMP_Text bestCountTxt;
 
     //----- Functions
     void Awake() {
+        SetGridSize(totalBtn);
         PopulateBtns();
         catsImage = Resources.LoadAll<Sprite>("Sprites/Cats");
     } //-- Awake end
@@ -42,6 +49,16 @@ public class GameController : MonoBehaviour
         ShuffleCats(catPuzzles);
     } //-- Awake end
 
+
+    private void SetGridSize(int size) {
+        GridLayoutGroup puzzleGrid = puzzleField.GetComponent<GridLayoutGroup>();
+        if (size == 8)
+            puzzleGrid.cellSize = new Vector2(280, 280);
+        else if (size == 12)
+            puzzleGrid.cellSize = new Vector2(230, 230);
+        else if (size == 16)
+            puzzleGrid.cellSize = new Vector2(180, 180);
+    } //-- SetGridSize
 
     private void PopulateBtns() {
         for (int i = 0; i < totalBtn; i++) {
@@ -76,6 +93,8 @@ public class GameController : MonoBehaviour
         }
 
         gameGuesses = catPuzzles.Count / 2;
+        tempMatchLeft = gameGuesses;
+        matchCountTxt.text = gameGuesses.ToString();
     } //-- AddCatPuzzles end
 
     private void AddBtnListeners() {
@@ -109,6 +128,7 @@ public class GameController : MonoBehaviour
             btnList[secondGuessIndex].image.sprite = catPuzzles[secondGuessIndex];
 
             countGuesses++;
+            guessCountTxt.text = countGuesses.ToString();
             StartCoroutine(CheckIfCatsMatch());
         }
     } //-- PickPuzzle end
@@ -135,12 +155,25 @@ public class GameController : MonoBehaviour
 
     void IsGameFinished() {
         countCorrectGuesses++;
+        tempMatchLeft--;
+        matchCountTxt.text = tempMatchLeft.ToString();
 
         if (countCorrectGuesses == gameGuesses) {
-            Debug.Log("Game Finished");
-            Debug.Log("Total: " + countGuesses);
+            StartCoroutine(EndGame());
         }
     } //-- IsGameFinised end
+
+    IEnumerator EndGame() {
+        yield return new WaitForSeconds(0.5f);
+        endImg.SetActive(true);
+
+        yield return new WaitForSeconds(3.0f);
+        SceneManager.LoadScene("Menu");
+    } //-- EndGame end
+
+    public void HomeBtn() {
+        SceneManager.LoadScene("Menu");
+    } //-- HomeBtn end
 }
 
 /*
