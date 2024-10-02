@@ -545,8 +545,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   puzzleField: {fileID: 1863502641}
   bgImage: {fileID: 21300000, guid: e7270c8fe20f13642a427735004a9efa, type: 3}
-  btn: {fileID: 5412443426591585756, guid: 7f9e4655a198128459f08d0c0f354f7d, type: 3}
+  catsImage: []
+  catPuzzles: []
   btnList: []
+  btn: {fileID: 5412443426591585756, guid: 7f9e4655a198128459f08d0c0f354f7d, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
